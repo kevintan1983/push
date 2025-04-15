@@ -1,0 +1,212 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Subscription Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Push Subscription Demo</h1>
+    
+    <button id="subscribeButton">Subscribe to Push Notifications</button>
+    <button id="unsubscribeButton" disabled>Unsubscribe</button>
+    <button id="getSubscriptionButton">Get Current Subscription</button>
+    
+    <div id="status"></div>
+    <pre id="subscriptionData"></pre>
+    
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    // Register the service worker
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    
+                    // Check if already subscribed
+                    const subscription = await registration.pushManager.getSubscription();
+                    updateUI(subscription);
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                    updateStatus('Service Worker registration failed: ' + error.message, 'error');
+                }
+            });
+        } else {
+            updateStatus('Push notifications not supported in this browser', 'error');
+            document.getElementById('subscribeButton').disabled = true;
+            document.getElementById('getSubscriptionButton').disabled = true;
+        }
+
+        // Subscribe to Push
+        document.getElementById('subscribeButton').addEventListener('click', async () => {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Request notification permission
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    throw new Error('Permission not granted for notifications');
+                }
+                
+                // You would generate this on your server in a real application
+                // This is just a dummy key for demonstration
+                const vapidPublicKey = 'BCZcisAiMpZJJFIv_3DtCY3fReTb_uXf3tLBpTQ9nv-HmRyGUDXtT8UozYROs-dmzsTc63nxInNBJLbgJC2Xl5c';
+                
+                // Convert VAPID key to the format the browser needs
+                const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+                
+                // Subscribe to push service
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: applicationServerKey
+                });
+                
+                console.log('Push Subscription:', subscription);
+                updateUI(subscription);
+                updateStatus('Successfully subscribed to push notifications', 'success');
+                
+                // In a real app, you would send this subscription to your server
+                // await sendSubscriptionToServer(subscription);
+                
+            } catch (error) {
+                console.error('Error subscribing to push:', error);
+                updateStatus('Failed to subscribe: ' + error.message, 'error');
+            }
+        });
+
+        // Unsubscribe from Push
+        document.getElementById('unsubscribeButton').addEventListener('click', async () => {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                
+                if (subscription) {
+                    await subscription.unsubscribe();
+                    console.log('Successfully unsubscribed');
+                    updateUI(null);
+                    updateStatus('Successfully unsubscribed from push notifications', 'success');
+                    
+                    // In a real app, you'd inform your server
+                    // await removeSubscriptionFromServer(subscription);
+                }
+                
+            } catch (error) {
+                console.error('Error unsubscribing:', error);
+                updateStatus('Failed to unsubscribe: ' + error.message, 'error');
+            }
+        });
+
+        // Get Current Subscription
+        document.getElementById('getSubscriptionButton').addEventListener('click', async () => {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                
+                console.log('Current Push Subscription:', subscription);
+                
+                if (subscription) {
+                    updateUI(subscription);
+                    updateStatus('Retrieved current subscription', 'success');
+                } else {
+                    updateStatus('No subscription found', 'error');
+                    document.getElementById('subscriptionData').textContent = 'No active subscription';
+                }
+                
+            } catch (error) {
+                console.error('Error getting subscription:', error);
+                updateStatus('Failed to get subscription: ' + error.message, 'error');
+            }
+        });
+
+        // Helper Functions
+        function updateUI(subscription) {
+            const subscribeButton = document.getElementById('subscribeButton');
+            const unsubscribeButton = document.getElementById('unsubscribeButton');
+            const subscriptionData = document.getElementById('subscriptionData');
+            
+            if (subscription) {
+                // We have a subscription
+                subscribeButton.disabled = true;
+                unsubscribeButton.disabled = false;
+                
+                // Display subscription details (sanitized for display)
+                const subscriptionJSON = JSON.stringify(subscription.toJSON(), null, 2);
+                subscriptionData.textContent = subscriptionJSON;
+            } else {
+                // No subscription
+                subscribeButton.disabled = false;
+                unsubscribeButton.disabled = true;
+                subscriptionData.textContent = '';
+            }
+        }
+
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = type;
+        }
+
+        // Convert base64 to Uint8Array for applicationServerKey
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+    </script>
+</body>
+</html>
