@@ -1,3 +1,3 @@
 // vapidConfig.js
-const keys = require('./vapidKeys.json');
-module.exports = keys;
+import keys from './vapidKeys.json';
+export default keys;
