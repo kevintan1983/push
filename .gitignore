@@ -1,3 +1,6 @@
+# Exclude credentials
+vapidKeys.json
+
 # Logs
 logs
 *.log
