@@ -1,0 +1,8 @@
+{
+    "endpoint": "https://wns2-ln2p.notify.windows.com/w/?token=BQYAAADcxPcTaBpdobRjtbXtggrslD5QyKyPvx7eUUY2FCa4w6vF0DqfLCTU6pLJH6i3fPeCyWKtYU3yVBJkVs2drHD2Wsb9HGak1PQTbiBHkAV7J%2f4y%2bNvDWp9Dj9KQI4%2bxNIpTWV%2flb%2fE%2fWgqyPeMrz8NPVBe%2f%2fT6pHhD%2btxGH2xcZApMScVDq927ibKAL%2f7Cm8pQzb35ZzovSuJbif52shpLqi3JDmp8Z5BCTgbh%2bcivXXCIEY%2baccPTlIhskC7RX7dqcc36etFVvbXoOlL6KDBQ1VAPHIKVls%2fK6cQXQLWdXODyi%2f2FC0L9rOJl%2f94f0P7k%3d",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "BFnTYVW2kmRcSKe6vVXIlo_5f9gq-uD6Y90oHQepGsxdXMbD0PPMyPFvKk8BSpf8l9XNBkfQ1MQdSHJ--JA1VQ8",
+      "auth": "zHT2QY_ouW4FvfrEoxQNDQ"
+    }
+  }

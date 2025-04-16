@@ -1,6 +1,7 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             margin: 0 auto;
             padding: 20px;
         }
+
         button {
             background-color: #4CAF50;
             border: none;
@@ -25,23 +27,28 @@
             cursor: pointer;
             border-radius: 4px;
         }
+
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
         #status {
             margin-top: 20px;
             padding: 10px;
             border-radius: 4px;
         }
+
         .success {
             background-color: #dff0d8;
             color: #3c763d;
         }
+
         .error {
             background-color: #f2dede;
             color: #a94442;
         }
+
         pre {
             background-color: #f5f5f5;
             padding: 10px;
@@ -50,16 +57,18 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Push Subscription Demo</h1>
-    
+
     <button id="subscribeButton">Subscribe to Push Notifications</button>
     <button id="unsubscribeButton" disabled>Unsubscribe</button>
     <button id="getSubscriptionButton">Get Current Subscription</button>
-    
+
     <div id="status"></div>
     <pre id="subscriptionData"></pre>
-    
+    <button id="copyButton" title="Copy to Clipboard">📋</button>
+
     <script>
         // Service Worker Registration
         if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -68,7 +77,7 @@
                     // Register the service worker
                     const registration = await navigator.serviceWorker.register('/sw.js');
                     console.log('Service Worker registered with scope:', registration.scope);
-                    
+
                     // Check if already subscribed
                     const subscription = await registration.pushManager.getSubscription();
                     updateUI(subscription);
@@ -87,33 +96,33 @@
         document.getElementById('subscribeButton').addEventListener('click', async () => {
             try {
                 const registration = await navigator.serviceWorker.ready;
-                
+
                 // Request notification permission
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
                     throw new Error('Permission not granted for notifications');
                 }
-                
+
                 // You would generate this on your server in a real application
                 // This is just a dummy key for demonstration
                 const vapidPublicKey = 'BCZcisAiMpZJJFIv_3DtCY3fReTb_uXf3tLBpTQ9nv-HmRyGUDXtT8UozYROs-dmzsTc63nxInNBJLbgJC2Xl5c';
-                
+
                 // Convert VAPID key to the format the browser needs
                 const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
-                
+
                 // Subscribe to push service
                 const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: applicationServerKey
                 });
-                
+
                 console.log('Push Subscription:', subscription);
                 updateUI(subscription);
                 updateStatus('Successfully subscribed to push notifications', 'success');
-                
+
                 // In a real app, you would send this subscription to your server
                 // await sendSubscriptionToServer(subscription);
-                
+
             } catch (error) {
                 console.error('Error subscribing to push:', error);
                 updateStatus('Failed to subscribe: ' + error.message, 'error');
@@ -125,17 +134,17 @@
             try {
                 const registration = await navigator.serviceWorker.ready;
                 const subscription = await registration.pushManager.getSubscription();
-                
+
                 if (subscription) {
                     await subscription.unsubscribe();
                     console.log('Successfully unsubscribed');
                     updateUI(null);
                     updateStatus('Successfully unsubscribed from push notifications', 'success');
-                    
+
                     // In a real app, you'd inform your server
                     // await removeSubscriptionFromServer(subscription);
                 }
-                
+
             } catch (error) {
                 console.error('Error unsubscribing:', error);
                 updateStatus('Failed to unsubscribe: ' + error.message, 'error');
@@ -147,9 +156,9 @@
             try {
                 const registration = await navigator.serviceWorker.ready;
                 const subscription = await registration.pushManager.getSubscription();
-                
+
                 console.log('Current Push Subscription:', subscription);
-                
+
                 if (subscription) {
                     updateUI(subscription);
                     updateStatus('Retrieved current subscription', 'success');
@@ -157,10 +166,27 @@
                     updateStatus('No subscription found', 'error');
                     document.getElementById('subscriptionData').textContent = 'No active subscription';
                 }
-                
+
             } catch (error) {
                 console.error('Error getting subscription:', error);
                 updateStatus('Failed to get subscription: ' + error.message, 'error');
+            }
+        });
+
+        // Copy to Clipboard Functionality
+        document.getElementById('copyButton').addEventListener('click', () => {
+            const subscriptionData = document.getElementById('subscriptionData').textContent;
+            if (subscriptionData) {
+                navigator.clipboard.writeText(subscriptionData)
+                    .then(() => {
+                        updateStatus('Subscription data copied to clipboard', 'success');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        updateStatus('Failed to copy subscription data', 'error');
+                    });
+            } else {
+                updateStatus('No subscription data to copy', 'error');
             }
         });
 
@@ -169,12 +195,12 @@
             const subscribeButton = document.getElementById('subscribeButton');
             const unsubscribeButton = document.getElementById('unsubscribeButton');
             const subscriptionData = document.getElementById('subscriptionData');
-            
+
             if (subscription) {
                 // We have a subscription
                 subscribeButton.disabled = true;
                 unsubscribeButton.disabled = false;
-                
+
                 // Display subscription details (sanitized for display)
                 const subscriptionJSON = JSON.stringify(subscription.toJSON(), null, 2);
                 subscriptionData.textContent = subscriptionJSON;
@@ -198,10 +224,10 @@
             const base64 = (base64String + padding)
                 .replace(/\-/g, '+')
                 .replace(/_/g, '/');
-            
+
             const rawData = window.atob(base64);
             const outputArray = new Uint8Array(rawData.length);
-            
+
             for (let i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
             }
@@ -209,4 +235,5 @@
         }
     </script>
 </body>
+
 </html>
