@@ -104,7 +104,7 @@
                 }
 
                 // Fetch VAPID public key from JSON file
-                const response = await fetch('vapidKeys.json');
+                const response = await fetch('/config/vapidKeys.json');
                 if (!response.ok) {
                     throw new Error('Failed to fetch VAPID public key');
                 }

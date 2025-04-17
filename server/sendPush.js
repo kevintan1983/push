@@ -1,13 +1,15 @@
 const webPush = require('web-push');
 
 // Import VAPID keys from a separate config file (use require only)
-const vapidConfig = require('./vapidConfig');
+const vapidConfig = require('../config/vapidConfig');
 
 webPush.setVapidDetails(
     vapidConfig.subject,
     vapidConfig.publicKey,
     vapidConfig.privateKey
 );
+
+
 
 // This is the subscription you provided
 const pushSubscription = require('./pushSubscription.json');
