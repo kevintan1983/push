@@ -4,9 +4,9 @@ const webPush = require('web-push');
 const vapidConfig = require('./vapidConfig');
 
 webPush.setVapidDetails(
-    'mailto:user@email.com',
-    vapidConfig.vapid.publicKey,
-    vapidConfig.vapid.privateKey
+    vapidConfig.subject,
+    vapidConfig.publicKey,
+    vapidConfig.privateKey
 );
 
 // This is the subscription you provided
