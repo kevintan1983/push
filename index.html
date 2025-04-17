@@ -103,9 +103,14 @@
                     throw new Error('Permission not granted for notifications');
                 }
 
-                // You would generate this on your server in a real application
-                // This is just a dummy key for demonstration
-                const vapidPublicKey = 'BFxqxqM_Gtb0KRH1gWmeIoFgjhAK5lNpu0Uwv_V4tc7iHFeDTE17iaPboL27s2d7tJBEFk8Szhr37DyVXKSy5vk';
+                // Fetch VAPID public key from JSON file
+                const response = await fetch('vapidKeys.json');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch VAPID public key');
+                }
+
+                const keys = await response.json();
+                const vapidPublicKey = keys.publicKey;
 
                 // Convert VAPID key to the format the browser needs
                 const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
