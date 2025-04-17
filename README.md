@@ -13,15 +13,15 @@
    ```
 3. 新增 **vapidKeys.json** 檔案，透過 [Vapid Key Generator | VapidKeys.com](https://vapidkeys.com/) 網站產生一組 Vapid Key，將 json 內容複製到 vapidKeys.json 檔案
 4. VS Code 安裝 Live Server extension，將 index.html 按右鍵選 `Open With Live Server`
-5. 瀏覽 http://127.0.0.1:5500/index.html，點選 Subscribe to Push Notifications 按鈕
-   ![1744866582313](https://file+.vscode-resource.vscode-cdn.net/c%3A/Repository/push/image/README/1744866582313.png)
-6. grant permission (無痕模式不支援 Push API)
+5. 瀏覽 [http://127.0.0.1:5500/index.html](http://127.0.0.1:5500/index.html) 選 Subscribe to Push Notifications 按鈕
+   ![1744866582313](image/README/1744866582313.png)
+7. grant permission (無痕模式不支援 Push API)
    ![1744866736989](image/README/1744866736989.png)
-7. 複製 pushSubscription 物件內容
+8. 複製 pushSubscription 物件內容
    ![1744866897341](image/README/1744866897341.png)
-8. 貼到 pushSubscription.json 檔案裡
-9. 開啟 Terminal 視窗，執行推播指令
+9. 貼到 pushSubscription.json 檔案裡
+10. 開啟 Terminal 視窗，執行推播指令
 
-   ```
-   node .\sendPush.js
-   ```
+    ```
+    node .\sendPush.js
+    ```
