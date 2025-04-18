@@ -12,7 +12,7 @@
    c:\Repository\push\npm install
    ```
 3. 新增 **vapidKeys.json** 檔案，透過 [Vapid Key Generator | VapidKeys.com](https://vapidkeys.com/) 網站產生一組 Vapid Key，將 json 內容複製到 config\vapidKeys.json 檔案
-4. VS Code 安裝 Live Server extension，將 client\index.html 按右鍵選 `Open With Live Server`
+4. VS Code 安裝 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)，將 client\index.html 按右鍵選 `Open With Live Server`
 5. 瀏覽 [http://127.0.0.1:5500/client/index.html](http://127.0.0.1:5500/client/index.html) 選 Subscribe to Push Notifications 按鈕
    ![1744866582313](image/README/1744866582313.png)
 6. grant permission (無痕模式不支援 Push API)
